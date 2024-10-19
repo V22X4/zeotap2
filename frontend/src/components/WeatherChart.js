@@ -1,6 +1,4 @@
-// src/components/WeatherChart.js
-import React from 'react';
-import { Line } from 'react-chartjs-2';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Chart as ChartJS,
   LineElement,
@@ -11,41 +9,140 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import { Line } from 'react-chartjs-2';
 
-// Registering necessary components
-ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Title, Tooltip, Legend);
+// Register Chart.js components
+ChartJS.register(
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const WeatherChart = ({ weatherData }) => {
-    console.log("Weather Data:", weatherData); // Log the weather data for debugging
-  
-    // Check if weatherData and summaries exist and are in the correct format
-    if (!weatherData || !weatherData.summaries || !Array.isArray(weatherData.summaries)) {
-      return <p>No valid data available.</p>; // Handle invalid data case
+  const chartRef = useRef(null);
+  const summaries = weatherData?.summaries || [];
+
+  // Initialize state with all cities selected
+  const [selectedCities, setSelectedCities] = useState(
+    summaries.map((summary) => summary.city)
+  );
+  const [chartData, setChartData] = useState(null);
+  const [dominantConditions, setDominantConditions] = useState([]);
+  const [currentTemps, setCurrentTemps] = useState([]);
+
+  // Handle city selection
+  const handleCityChange = (event) => {
+    const { value, checked } = event.target;
+    if (checked) {
+      setSelectedCities((prev) => [...prev, value].sort());
+    } else {
+      setSelectedCities((prev) =>
+        prev.filter((city) => city !== value).sort()
+      );
     }
-  
-    // Extract temperatures and city names from weatherData.summaries
-    const temperatures = weatherData.summaries.map(data => data.avgTemp);
-    const cities = weatherData.summaries.map(data => data.city);
-  
-    const chartData = {
-      labels: cities, // Use city names as labels
+  };
+
+  // Prepare chart data whenever selected cities change
+  useEffect(() => {
+    const filteredSummaries = summaries.filter((data) =>
+      selectedCities.includes(data.city)
+    );
+
+    // Sort the data alphabetically by city name
+    const sortedSummaries = [...filteredSummaries].sort((a, b) =>
+      a.city.localeCompare(b.city)
+    );
+
+    const cities = sortedSummaries.map((data) => data.city);
+    const avgTemps = sortedSummaries.map((data) => data.avgTemp);
+    const maxTemps = sortedSummaries.map((data) => data.maxTemp);
+    const minTemps = sortedSummaries.map((data) => data.minTemp);
+    const conditions = sortedSummaries.map((data) => data.dominantCondition);
+    const latestCurrentTemps = sortedSummaries.map((data) => data.currentTemp);
+
+    const data = {
+      labels: cities,
       datasets: [
         {
           label: 'Average Temperature (°C)',
-          data: temperatures,
-          borderColor: 'rgba(75,192,192,1)',
-          backgroundColor: 'rgba(75,192,192,0.2)',
+          data: avgTemps,
+          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
           fill: true,
+          tension: 0.4,
+        },
+        {
+          label: 'Max Temperature (°C)',
+          data: maxTemps,
+          borderColor: 'rgba(255, 99, 132, 1)',
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          fill: true,
+          tension: 0.4,
+        },
+        {
+          label: 'Min Temperature (°C)',
+          data: minTemps,
+          borderColor: 'rgba(54, 162, 235, 1)',
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          fill: true,
+          tension: 0.4,
         },
       ],
     };
-  
-    return (
-      <div>
-        <h2>Weather Summary</h2>
-        <Line data={chartData} />
+
+    setChartData(data);
+    setDominantConditions(conditions);
+    setCurrentTemps(latestCurrentTemps);
+  }, [selectedCities]);
+
+  return (
+    <div>
+      <h2>Weather Summary</h2>
+
+      {/* City Selection */}
+      <div style={{ marginBottom: '1rem' }}>
+        <h3>Select Cities</h3>
+        {summaries
+          .sort((a, b) => a.city.localeCompare(b.city))
+          .map((summary) => (
+            <div key={summary.city}>
+              <input
+                type="checkbox"
+                value={summary.city}
+                onChange={handleCityChange}
+                checked={selectedCities.includes(summary.city)}
+              />
+              <label>{summary.city}</label>
+            </div>
+          ))}
       </div>
-    );
-  };
+
+      {/* Chart */}
+      {chartData ? (
+        <Line ref={chartRef} data={chartData} />
+      ) : (
+        <p>Please select cities to display the chart.</p>
+      )}
+
+      {/* Dominant Conditions */}
+      {selectedCities.length > 0 && (
+        <>
+          <h3>Dominant Weather Conditions</h3>
+          <ul>
+            {dominantConditions.map((condition, index) => (
+              <li key={index}>
+                <strong>{selectedCities[index]}:</strong> {condition} | Current Temp: {currentTemps[index]}°C
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
+  );
+};
 
 export default WeatherChart;

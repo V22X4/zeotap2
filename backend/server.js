@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const weatherRoutes = require('./routes/weatherRoutes');
+const alertRoutes = require('./routes/alertRoutes');
 const { updateWeatherData } = require('./controllers/weatherController');
 
 const app = express();
@@ -18,6 +19,7 @@ mongoose.connect(MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })
 
 // Use weather routes
 app.use('/api/weather', weatherRoutes);
+app.use('/api/alerts', alertRoutes);
 
 // Poll the OpenWeatherMap API every 5 minutes for multiple cities
 const CITIES = ['Delhi', 'Mumbai', 'Chennai', 'Bangalore', 'Kolkata', 'Hyderabad'];
@@ -25,7 +27,6 @@ const INTERVAL = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 const pollWeatherData = () => {
   CITIES.forEach(async (city) => {
-    console.log(city);
     await updateWeatherData(city);
   });
 };
