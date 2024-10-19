@@ -1,50 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+// src/components/WeatherDisplay.js
+import React from 'react';
 import WeatherChart from './WeatherChart';
+import usePolling from '../hooks/usePolling';
+import { fetchWeatherData } from '../api/weatherApi';
 
+// src/components/WeatherDisplay.js
+// src/components/WeatherDisplay.js
 const WeatherDisplay = () => {
-  const [weatherData, setWeatherData] = useState([]);
-  const [alert, setAlert] = useState('');
-
-  // Fetch latest weather data from the backend
-  const fetchWeatherData = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/weather/latest');
-      setWeatherData(response.data.summaries);
-      if (response.data.alerts.length > 0) {
-        setAlert(response.data.alerts.join('\n'));
-      } else {
-        setAlert('');
-      }
-    } catch (error) {
-      console.error('Error fetching weather data:', error);
+    const { data: weatherData, error } = usePolling(fetchWeatherData, 5 * 60 * 1000);
+  
+    console.log('Weather Data:', weatherData); // Log the structure of weatherData
+  
+    if (error) {
+      return <div>Error fetching weather data: {error.message}</div>;
     }
+  
+    if (!weatherData) {
+      return <div>Loading...</div>;
+    }
+  
+    return (
+      <div>
+        <h1>Weather Monitoring</h1>
+        <WeatherChart weatherData={weatherData} />
+      </div>
+    );
   };
-
-  useEffect(() => {
-    fetchWeatherData();
-    const interval = setInterval(fetchWeatherData, 300000); // Fetch data every 5 minutes
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, []);
-
-  return (
-    <div>
-      <h1>Latest Weather Summary</h1>
-      {alert && <h2 style={{ color: 'red' }}>{alert}</h2>}
-      
-      {/* Weather Chart Visualization */}
-      <WeatherChart weatherData={weatherData} />
-
-      {/* You can also display the latest data in a list if needed */}
-      <ul>
-        {weatherData.map((entry) => (
-          <li key={entry._id}>
-            <strong>{entry.city}</strong>: Avg Temp: {entry.avgTemp}°C, Max Temp: {entry.maxTemp}°C, Min Temp: {entry.minTemp}°C, Condition: {entry.dominantCondition}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
+  
 
 export default WeatherDisplay;
