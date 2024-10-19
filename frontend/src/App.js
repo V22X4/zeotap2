@@ -1,17 +1,12 @@
-import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Home from "./pages/Home";
-import Alerts from "./pages/Alerts";
+import React from 'react';
+import WeatherDisplay from './components/WeatherDisplay';
 
-function App() {
+const App = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/alerts" element={<Alerts />} />
-      </Routes>
-    </Router>
+    <div className="App">
+      <WeatherDisplay />
+    </div>
   );
-}
+};
 
 export default App;

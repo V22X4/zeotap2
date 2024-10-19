@@ -1,35 +1,55 @@
-const WeatherSummary = require("../models/WeatherSummary");
-const { fetchWeather } = require("../services/weatherService");
-const { kelvinToCelsius } = require("../utils/convertTemp");
+const WeatherSummary = require('../models/WeatherSummary');
+const { fetchWeather } = require('../services/weatherService');
 
-const CITIES = [
-  "Delhi",
-  "Mumbai",
-  "Chennai",
-  "Bangalore",
-  "Kolkata",
-  "Hyderabad",
-];
-
-async function getWeatherData(req, res) {
+// Fetch today's latest weather data and check for alerts
+const getLatestWeatherData = async (req, res) => {
   try {
-    const weatherPromises = CITIES.map((city) => fetchWeather(city));
-    const weatherData = await Promise.all(weatherPromises);
+    // Fetch latest weather data for each city
+    const latestSummaries = await WeatherSummary.aggregate([
+      {
+        $group: {
+          _id: "$city",
+          latestSummary: { $last: "$$ROOT" }
+        }
+      },
+      {
+        $replaceRoot: { newRoot: "$latestSummary" }
+      }
+    ]);
 
-    const summaries = weatherData.map((data) => ({
-      city: data.name,
-      date: new Date(data.dt * 1000).toLocaleDateString(),
-      avgTemp: kelvinToCelsius(data.main.temp),
-      maxTemp: kelvinToCelsius(data.main.temp_max),
-      minTemp: kelvinToCelsius(data.main.temp_min),
-      dominantCondition: data.weather[0].main,
-    }));
+    // Check for alerts
+    const alerts = latestSummaries
+      .filter(entry => entry.avgTemp > 35)
+      .map(entry => `⚠️ ALERT: Temperature in ${entry.city} exceeded 35°C!`);
 
-    await WeatherSummary.insertMany(summaries);
-    res.json(summaries);
-  } catch (error) {
-    res.status(500).json({ error: "Error fetching weather data" });
+    res.json({ summaries: latestSummaries, alerts });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
   }
-}
+};
 
-module.exports = { getWeatherData };
+// Update weather data for cities
+const updateWeatherData = async (city) => {
+  const weather = await fetchWeather(city);
+  if (weather) {
+    const { name, main, weather: weatherDetails, dt } = weather;
+
+    const temp = (main.temp - 273.15).toFixed(2);
+    const maxTemp = (main.temp_max - 273.15).toFixed(2);
+    const minTemp = (main.temp_min - 273.15).toFixed(2);
+    const dominantCondition = weatherDetails[0].main;
+
+    // Save the weather summary to the database
+    await WeatherSummary.create({
+      city: name,
+      date: new Date(dt * 1000).toLocaleDateString(),
+      avgTemp: temp,
+      maxTemp,
+      minTemp,
+      dominantCondition
+    });
+  }
+};
+
+module.exports = { getLatestWeatherData, updateWeatherData };
