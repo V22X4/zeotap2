@@ -1,3 +1,3 @@
 
-const availableCities = ['Bengaluru', 'Chennai', 'Delhi', 'Hyderabad', 'Mumbai'];
+const availableCities = ['Bengaluru', 'Chennai', 'Delhi', 'Hyderabad', 'Kolkata', 'Mumbai'];
 export default availableCities;

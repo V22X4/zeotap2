@@ -68,7 +68,7 @@ const WeatherChart = ({ weatherData }) => {
       labels: cities,
       datasets: [
         {
-          label: 'Average Temperature (°C)',
+          label: 'Average Temperature (last) (°C)',
           data: avgTemps,
           borderColor: 'rgba(75, 192, 192, 1)',
           backgroundColor: 'rgba(75, 192, 192, 0.2)',
@@ -101,6 +101,21 @@ const WeatherChart = ({ weatherData }) => {
 
   return (
     <div>
+
+       {/* Dominant Conditions */}
+       {selectedCities.length > 0 && (
+        <>
+          <h3>Dominant Weather Conditions</h3>
+          <ul>
+            {dominantConditions.map((condition, index) => (
+              <li key={index}>
+                <strong>{selectedCities[index]}:</strong> {condition} | Current Temp: {currentTemps[index]}°C
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      
       <h2>Weather Summary</h2>
 
       {/* City Selection */}
@@ -128,19 +143,7 @@ const WeatherChart = ({ weatherData }) => {
         <p>Please select cities to display the chart.</p>
       )}
 
-      {/* Dominant Conditions */}
-      {selectedCities.length > 0 && (
-        <>
-          <h3>Dominant Weather Conditions</h3>
-          <ul>
-            {dominantConditions.map((condition, index) => (
-              <li key={index}>
-                <strong>{selectedCities[index]}:</strong> {condition} | Current Temp: {currentTemps[index]}°C
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
+     
     </div>
   );
 };

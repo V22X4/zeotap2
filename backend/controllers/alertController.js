@@ -1,4 +1,6 @@
 const AlertRequest = require('../models/AlertRequest');
+const Alert = require('../models/Alert');
+const { sendEmail } = require('../services/emailService');
 
 // Register a new alert request
 const registerAlert = async (req, res) => {
@@ -12,4 +14,39 @@ const registerAlert = async (req, res) => {
   }
 };
 
-module.exports = { registerAlert };
+// Fetch all triggered alerts for a specific email
+const getTriggeredAlerts = async (req, res) => {
+    try {
+        const { email } = req.query;
+        console.log(email)
+      const alerts = await Alert.find({ email });
+      res.json(alerts);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to fetch alerts' });
+    }
+};
+
+const checkAlertsAndNotify = async (name, temp, date) => {
+    try {
+        const alerts = await AlertRequest.find({ city: name });
+  
+        for (const alert of alerts) {
+            
+            if (temp > alert.maxTemp || temp < alert.minTemp) {
+                const message = `⚠️ ALERT: Temperature in ${name} exceeded thresholds!\nCurrent Temp: ${temp}°C at ${date}`;
+                await sendEmail(alert.email, 'Temperature Alert', message).then(async() => {
+                    // Mark the alert as triggered and store the message
+                    await Alert.create({ email: alert.email, city: name, message, maxTemp: alert.maxTemp, minTemp: alert.minTemp,  alertTemp : temp});
+                });
+
+            }
+          }
+          
+    } catch (err) {
+      console.error('Error checking alerts:', err);
+    }
+};
+  
+
+module.exports = { registerAlert, getTriggeredAlerts, checkAlertsAndNotify };
