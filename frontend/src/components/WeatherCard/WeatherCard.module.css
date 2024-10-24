@@ -1,0 +1,54 @@
+.weatherCard {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  
+  .cityName {
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+  
+  .weatherDetails {
+    display: flex;
+    flex-direction: column;
+    /* gap: 8px; */
+  }
+  
+  .temperature {
+    font-size: 2.25rem;
+    font-weight: bold;
+  }
+  
+  .condition {
+    color: #4b5563; /* Tailwind's gray-600 */
+  }
+  
+  .icon {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .sun {
+    color: #fbbf24; /* Tailwind's yellow-500 */
+  }
+  
+  .cloud {
+    color: #6b7280; /* Tailwind's gray-500 */
+  }
+  
+  .rain {
+    color: #3b82f6; /* Tailwind's blue-500 */
+  }
+  

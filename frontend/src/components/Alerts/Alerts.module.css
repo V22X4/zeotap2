@@ -1,0 +1,21 @@
+/* Alerts.module.css */
+.alertsContainer {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 5px;
+    width: 100%;
+}
+
+.alertsContainer > * {
+    flex: 1;
+    min-width: 300px;
+}
+
+@media (max-width: 768px) {
+    .alertsContainer > * {
+        flex-basis: 100%;
+    }
+}

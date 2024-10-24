@@ -20,7 +20,7 @@ const sendEmail = (to, subject, text) => {
         text,
     };
 
-    return transporter.sendMail(mailOptions);
+    // return transporter.sendMail(mailOptions);
 };
 
 module.exports = { sendEmail };

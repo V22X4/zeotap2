@@ -6,6 +6,7 @@ const weatherSummarySchema = new mongoose.Schema({
   avgTemp: Number,
   maxTemp: Number,
   minTemp: Number,
+  feels_like: Number,
   dominantCondition: String
 });
 

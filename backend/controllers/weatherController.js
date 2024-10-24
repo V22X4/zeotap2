@@ -50,7 +50,7 @@ const getLatestWeatherData = async (req, res) => {
           latestEntry: { $first: "$latestEntry" },
           maxTemp: { $max: "$latestDayRecords.maxTemp" },
           minTemp: { $min: "$latestDayRecords.minTemp" },
-          avgTemp: { $avg: "$latestDayRecords.avgTemp" }
+          avgTemp: { $avg: "$latestDayRecords.avgTemp" },
         }
       },
 
@@ -62,6 +62,7 @@ const getLatestWeatherData = async (req, res) => {
           currentTemp: "$latestEntry.avgTemp",
           date: "$latestEntry.date",
           main: "$latestEntry.dominantCondition",
+          feels_like:  "$latestEntry.feels_like",
           maxTemp: 1,
           minTemp: 1,
           avgTemp: 1,
@@ -83,13 +84,14 @@ const getLatestWeatherData = async (req, res) => {
 const updateWeatherData = async (city) => {
   const weather = await fetchWeather(city);
   if (weather) {
-    const { name, main, weather: weatherDetails, dt } = weather;
+    const { name, main, weather: weatherDetails, dt} = weather;
 
     const temp = (main.temp - 273.15).toFixed(2);
     const maxTemp = (main.temp_max - 273.15).toFixed(2);
     const minTemp = (main.temp_min - 273.15).toFixed(2);
     const dominantCondition = weatherDetails[0].main;
     const date = new Date(dt * 1000);
+    const  feels_like = (main.feels_like - 273.15).toFixed(2);
     // Save the weather summary to the database
     await WeatherSummary.create({
       city: name,
@@ -97,6 +99,7 @@ const updateWeatherData = async (city) => {
       avgTemp: temp,
       maxTemp,
       minTemp,
+      feels_like,
       dominantCondition,
     });
     
