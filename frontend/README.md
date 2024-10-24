@@ -1,70 +1,80 @@
-# Getting Started with Create React App
+# Weather Monitoring System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The **Weather Monitoring System** is a full-stack application designed to fetch, store, and monitor weather data for selected cities, including features to set and trigger alerts when temperature thresholds are crossed. The system also provides a historical weather report for the past month.
 
-## Available Scripts
+## Table of Contents
 
-In the project directory, you can run:
+- [Technologies Used](#technologies-used)
+- [Features](#features)
+- [Backend](#backend)
+- [Frontend](#frontend)
+- [Database](#database)
+- [Setup Instructions](#setup-instructions)
+- [Running the Application](#running-the-application)
 
-### `npm start`
+## Technologies Used
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Frontend**: React
+- **Backend**: Express
+- **Database**: Mongodb
+- **Containerization**: Docker
+- **Weather API**: OpenWeather API
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Features
 
-### `npm test`
+- Real-time weather monitoring for selected cities.
+- Store weather data periodically and trigger alerts based on set temperature thresholds.
+- View the historical weather data of the last 30 days for a city.
+- Unit selection for temperature display (Celsius/Fahrenheit).
+- Threshold-based alerts.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Backend
 
-### `npm run build`
+The backend is built with **Expressjs**, responsible for fetching weather data from the OpenWeather API, storing it in mongodb, and providing the logic for alerts and historical data retrieval. It runs on port **5000** and handles API endpoints for city weather, threshold settings, and historical data.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+The entry point for the backend is `server.js` in the ./backend folder, and it uses the command:
+```bash
+node server.js
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Frontend
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+The frontend is built using **React** and is located in the `weather-frontend` directory. It provides a user-friendly interface to display current weather, set alerts, view weather history, and switch between temperature units. The frontend runs on port **3000** and is started using:
+```bash
+npm start
+```
 
-### `npm run eject`
+## Database
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+The project uses **mongodb** as the database to store weather data and alert thresholds. Weather data is periodically fetched from the OpenWeather API and stored in the database for analysis and history display.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Setup Instructions
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+1. Clone the repository:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```bash
+git clone https://github.com/V22X4/zeotap2.git
+cd zeotap2
+```
 
-## Learn More
+2. Ensure you have **Docker** installed.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+3. Build the Docker containers:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```bash
+docker-compose build
+```
 
-### Code Splitting
+4. Run the containers:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```bash
+docker-compose up
+```
 
-### Analyzing the Bundle Size
+## Running the Application
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- The **backend** will be available at: `http://localhost:5000`
+- The **frontend** will be available at: `http://localhost:3000`
 
-### Making a Progressive Web App
+You can access the frontend to interact with the weather monitoring system, set thresholds, and view the weather history.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

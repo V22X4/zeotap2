@@ -1,6 +1,14 @@
-version: '3.8' # Version of docker-compose
+version: "3.8" # Version of docker-compose
 
 services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo-container
+    ports:
+      - "27018:27017"
+    networks:
+      - app-network
+    restart: always
   backend:
     build: ./backend # Path to the backend Dockerfile
     container_name: backend-container
@@ -9,7 +17,9 @@ services:
     networks:
       - app-network
     environment:
-      - PORT=5000
+      - MONGO_URI=mongodb://mongo:27017/
+    depends_on:
+      - mongo
     restart: always
 
   frontend:
