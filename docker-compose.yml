@@ -1,0 +1,30 @@
+version: '3.8' # Version of docker-compose
+
+services:
+  backend:
+    build: ./backend # Path to the backend Dockerfile
+    container_name: backend-container
+    ports:
+      - "5000:5000" # Map the backend's internal port to the host
+    networks:
+      - app-network
+    environment:
+      - PORT=5000
+    restart: always
+
+  frontend:
+    build: ./frontend # Path to the frontend Dockerfile
+    container_name: frontend-container
+    ports:
+      - "3000:3000" # Map the frontend's internal port to the host
+    depends_on:
+      - backend # Ensure the backend starts first
+    networks:
+      - app-network
+    environment:
+      - REACT_APP_API_URL=http://backend:5000 # Connect frontend to backend
+    restart: always
+
+networks:
+  app-network:
+    driver: bridge
